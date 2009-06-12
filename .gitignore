@@ -2,10 +2,12 @@
 config/app_keys.yml
 config/config.yml
 config/database.yml
+config/ferret_server.yml
 config/deploy.rb
 coverage
 index/**
 log/*.log
+log/ferret_server.*
 nbproject
 public/logos/**
 tmp/restart.txt
