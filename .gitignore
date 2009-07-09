@@ -11,3 +11,4 @@ public/logos/**
 tmp/restart.txt
 tmp/**/*
 public/themes/*
+*.sqlite3
