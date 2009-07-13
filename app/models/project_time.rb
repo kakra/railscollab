@@ -82,7 +82,7 @@ class ProjectTime < ActiveRecord::Base
 	# Responsible party assignment
 	
 	def open_task=(obj)
-		self.project_task_list = obj.nil? ? nil : obj.task_list
+		self.project_task_list = obj.try(:task_list)
 		self.project_task = obj
 	end
 	
@@ -194,8 +194,9 @@ class ProjectTime < ActiveRecord::Base
 	       list.project_tasks.each do |task|
 	         total = ProjectTime.sum(:hours, :conditions => ['task_list_id = ? AND task_id = ?', list.id, task.id])
 	         if (!total.nil? and total > 0)
+	           total_billable = ProjectTime.sum(:hours, :conditions => ['task_list_id = ? AND task_id = ? AND is_billable = ?', list.id, task.id, true])
 	           extra_conditions = time_conds.clone.merge({'task_list_id' => list.id, 'task_id' => task.id})
-	           tasks << {:task => task, :hours => total, :list => ProjectTime.find(:all, :conditions => extra_conditions, :order => time_order)}
+	           tasks << {:task => task, :hours => total, :billable_hours => total_billable || 0, :list => ProjectTime.find(:all, :conditions => extra_conditions, :order => time_order)}
 	         end
 	       end
 	       
@@ -285,7 +286,7 @@ class ProjectTime < ActiveRecord::Base
 	
 	# Accesibility
 	
-	attr_accessible :name, :description, :done_date, :hours, :open_task_id, :assigned_to_id, :is_private, :is_important
+	attr_accessible :name, :description, :done_date, :hours, :open_task_id, :assigned_to_id, :is_private, :is_billable
 	
 	# Validation
 	
