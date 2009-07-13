@@ -74,12 +74,12 @@ So from scratch, you'd likely do something like to following to install:
 
 The snippit:
 
-	RAILSCOLLAB_INITIAL_USER="billg" \
-	RAILSCOLLAB_INITIAL_DISPLAYNAME="Bill Gates" \
-	RAILSCOLLAB_INITIAL_PASSWORD="microsoft" \
-	RAILSCOLLAB_INITIAL_EMAIL="billg@microsoft.com" \
-	RAILSCOLLAB_INITIAL_COMPANY="Microsoft" \
-	RAILSCOLLAB_SITE_URL="projects.microsoft.com" \
+	RAILSCOLLAB_INITIAL_USER="ole" \
+	RAILSCOLLAB_INITIAL_DISPLAYNAME="Ole Reifschneider" \
+	RAILSCOLLAB_INITIAL_PASSWORD="pass" \
+	RAILSCOLLAB_INITIAL_EMAIL="or@netactive.de" \
+	RAILSCOLLAB_INITIAL_COMPANY="netactive" \
+	RAILSCOLLAB_SITE_URL="localhost:3000" \
 	rake db:railscollab:install
 
 
