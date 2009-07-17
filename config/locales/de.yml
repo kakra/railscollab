@@ -17,6 +17,7 @@
   milestones: Meilensteine
   ptime: Dauer
   files: Dateien
+  wiki: Wiki
   tags: Schlagwörter
   forms: Formulare
   people: Personen
@@ -84,7 +85,10 @@
   edit_project: Projekt bearbeiten
   user_card: User card of {{user}}
   folder_name: "Ordner : {{folder}}"
-  company_card: "Company card of {{company}}"
+  add_page: Seite erzeugen
+  edit_page: Seite ändern
+  all_pages: Alle Seiten
+  company_card: "Kundenübersicht für {{company}}"
   reset_password: Passwort zurücksetzen
   set_password: Passwort festlegen
   save_changes: Änderungen speichern
