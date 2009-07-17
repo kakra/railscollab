@@ -2,24 +2,24 @@
 # RailsCollab
 # Copyright (C) 2007 - 2008 James S Urquhart
 # Portions Copyright (C) René Scheibe
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #++
 
 class UserController < ApplicationController
 
-  layout 'dashboard'
+  layout 'administration'
 
   filter_parameter_logging :password
 
@@ -29,10 +29,11 @@ class UserController < ApplicationController
          :redirect_to => { :controller => 'project' }
 
   before_filter :process_session
+  before_filter :obtain_user, :except => [:index, :add, :current]
   after_filter :user_track, :only => [:index, :card]
 
   def index
-  	redirect_to :controller => 'administration', :action => 'people'
+    redirect_to :controller => 'administration', :action => 'people'
   end
 
   def add
@@ -105,34 +106,8 @@ class UserController < ApplicationController
 
       if @user.save
         # Time to update permissions
-        user_project = params[:user_project] || []
+        update_project_permissions(@user, params[:user_project], params[:project_permission])
 
-        # Grab the list of project id's specified
-        project_list = user_project.select do |project_id|
-          begin
-            project = Project.find(project_id)
-            project.can_be_managed_by(@logged_user) ? project_id : nil
-          rescue ActiveRecord::RecordNotFound
-            nil
-          end
-        end.compact
-
-        # Associate project permissions with user
-        project_permission = params[:project_permission]
-        project_list.each do |project_id|
-          permission_list = project_permission.nil? ? nil : project_permission[project_id]
-
-          # Insert into permission list
-          Project.find(project_id).users << @user
-
-          # Reset and update permissions
-          if permission_list.nil?
-            ProjectUser.update_all(ProjectUser.update_str({}, @user), ['user_id = ? AND project_id = ?', @user.id, project_id])
-          else
-            ProjectUser.update_all(ProjectUser.update_str(permission_list, @user), ['user_id = ? AND project_id = ?', @user.id, project_id])
-          end
-        end
-        
         @user.send_new_account_info(new_account_password) if @send_email
 
         error_status(false, :success_added_user)
@@ -142,21 +117,13 @@ class UserController < ApplicationController
   end
 
   def edit
-    begin
-      @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      error_status(true, :invalid_user)
-      redirect_back_or_default :controller => 'dashboard'
-      return
-    end
-    
-  	unless @user.profile_can_be_updated_by(@logged_user)
+    unless @user.profile_can_be_updated_by(@logged_user)
       error_status(true, :insufficient_permissions)
       redirect_back_or_default :controller => 'dashboard'
       return
-  	end
+    end
   	
-  	@projects = @active_projects
+    @projects = @active_projects
     @permissions = ProjectUser.permission_names()
 
     case request.method
@@ -218,7 +185,7 @@ class UserController < ApplicationController
       end
     end
   end
-  
+
   def current
     @user = @logged_user
     unless @user.profile_can_be_updated_by(@logged_user)
@@ -226,21 +193,13 @@ class UserController < ApplicationController
       redirect_back_or_default :controller => 'dashboard'
       return
     end
-  	
-  	@projects = @active_projects
-    
+
+    @projects = @active_projects
+
     render :action => 'edit'
   end
 
   def delete
-    begin
-      @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      error_status(true, :invalid_user)
-      redirect_back_or_default :controller => 'dashboard'
-      return
-    end
-
     unless @user.can_be_deleted_by(@logged_user)
       error_status(true, :insufficient_permissions)
       redirect_back_or_default :controller => 'dashboard'
@@ -256,21 +215,13 @@ class UserController < ApplicationController
 
     redirect_back_or_default :controller => 'administration', :action => 'people'
   end
-  
+
   def edit_avatar
-    begin
-      @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      error_status(true, :invalid_user)
-      redirect_back_or_default :controller => 'dashboard'
-      return
-    end
-    
-  	unless @user.profile_can_be_updated_by(@logged_user)
+    unless @user.profile_can_be_updated_by(@logged_user)
       error_status(true, :insufficient_permissions)
       redirect_back_or_default :controller => 'dashboard'
       return
-  	end
+    end
 
     case request.method
     when :post
@@ -293,19 +244,11 @@ class UserController < ApplicationController
   end
 
   def delete_avatar
-    begin
-      @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      error_status(true, :invalid_user)
-      redirect_back_or_default :controller => 'dashboard'
-      return
-    end
-    
-  	unless @user.profile_can_be_updated_by(@logged_user)
+    unless @user.profile_can_be_updated_by(@logged_user)
       error_status(true, :insufficient_permissions)
       redirect_back_or_default :controller => 'dashboard'
       return
-  	end
+    end
 
     @user.avatar = nil
     @user.save
@@ -315,18 +258,81 @@ class UserController < ApplicationController
   end
 
   def card
-    begin
-      @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      error_status(false, :invalid_user)
-      redirect_back_or_default :controller => 'dashboard'
-      return
-    end
-
     unless @user.can_be_viewed_by(@logged_user)
       error_status(true, :insufficient_permissions)
       redirect_back_or_default :controller => 'dashboard'
       return
     end
+  end
+
+  def update_permissions
+    unless @user.profile_can_be_updated_by(@logged_user)
+      error_status(true, :insufficient_permissions)
+      redirect_back_or_default :controller => 'dashboard'
+      return
+    end
+
+    @projects = @user.company.projects
+    @permissions = ProjectUser.permission_names()
+
+    case request.method
+    when :post
+      update_project_permissions(@user, params[:user_project], params[:project_permission], @projects)
+      #ApplicationLog.new_log(@project, @logged_user, :edit, true)
+      error_status(false, :success_updated_permissions)
+    end
+  end
+
+  private
+  
+  def update_project_permissions(user, project_ids, project_permission, old_projects = nil)
+    project_ids ||= []
+
+    # Grab the list of project id's specified
+    project_list = project_ids.collect do |project_id|
+      begin
+        project = Project.find(project_id)
+        project.can_be_managed_by(@logged_user)
+        project
+      rescue ActiveRecord::RecordNotFound
+        nil
+      end
+    end.compact
+
+    # Associate project permissions with user
+    project_list.each do |project|
+      permission_list = project_permission.nil? ? nil : project_permission[project.id.to_s]
+
+      # Find permission list
+      project_user = project.project_users.find_or_create_by_user_id user.id
+
+      # Reset and update permissions
+      project_user.reset_permissions
+      project_user.update_str permission_list unless permission_list.nil?
+      project_user.save
+    end
+
+    unless old_projects.nil?
+    # Delete all permissions that aren't in the project list
+      delete_list = old_projects.collect do |project|
+        project.id unless project_list.include?(project)
+      end.compact
+
+      unless delete_list.empty?
+        ProjectUser.delete_all(:user_id => user.id, :project_id => delete_list)
+      end
+    end
+  end
+
+  def obtain_user
+    begin
+      @user = User.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      error_status(true, :invalid_user)
+      redirect_back_or_default :controller => 'dashboard'
+      return false
+    end
+
+    true
   end
 end

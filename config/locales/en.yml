@@ -1,4 +1,4 @@
-en-US:
+en:
   # Tabs
   overview: Overview
   my_projects: My projects
@@ -17,6 +17,7 @@ en-US:
   milestones: Milestones
   ptime: Time
   files: Files
+  wiki: Wiki
   tags: Tags
   forms: Forms
   people: People
@@ -41,7 +42,7 @@ en-US:
   add_project: Add project
   add_user: Add user
   add_client: Add client
-  change_password: Change password
+  edit_profile: Edit profile
   update_avatar: Update avatar
   permissions: Permissions
   edit_company: Edit company
@@ -72,6 +73,7 @@ en-US:
   edit_message_category: Edit message category
   edit_category: Edit category
   view_message: View message
+  category_messages: "Messages of category {{category}}"
   add_milestone: Add milestone
   edit_milestone: Edit milestone
   add_task_list: Add task list
@@ -84,6 +86,9 @@ en-US:
   edit_project: Edit project
   user_card: User card of {{user}}
   folder_name: "Folder : {{folder}}"
+  add_page: Add page
+  edit_page: Edit page
+  all_pages: All pages
   company_card: "Company card of {{company}}"
   reset_password: Reset password
   set_password: Set password
@@ -130,6 +135,7 @@ en-US:
   can_manage_files: Manage files
   can_assign_to_owners: Assign tasks to members of owner company
   can_assign_to_other: Assign tasks to members of other clients
+  can_manage_wiki_pages: Manage wiki pages
   
   # Status messages
   login_success: Login successful
@@ -145,6 +151,7 @@ en-US:
   invalid_email_not_in_use: Invalid email address
   password_changed: Password changed
   insufficient_permissions: Insufficient permissions
+  success_updated_profile: Successfully updated profile
   success_updated_permissions: Successfully updated permissions
   success_updated_avatar: Successfully updated avatar
   error_updating_avatar: Error uploading avatar
@@ -388,6 +395,9 @@ en-US:
   milestone_messages_created_format: "%b %e. %Y %H:%M"
   milestone_confirm_delete: "Are you sure you want to delete this milestone?"
   
+  # Wiki page view
+  wiki_page_confirm_delete: "Are you sure you want to delete this page?"
+  
   # Activity
   action_add: Added
   action_delete: Deleted
@@ -459,6 +469,7 @@ en-US:
   companies_involved_in: "Companies involved in project"
   tasks_in_list: "In {{list}}"
   anyone: Anyone
+  none: None
   project: Project
   page: Page
   
@@ -663,6 +674,8 @@ en-US:
   option_use_asset_hosts_description: "Enable usage of asset hosts. Also see assets_host_url"
   option_asset_hosts_url_name: "Asset hosts url"
   option_asset_hosts_url_description: "e.g. 'example.com' will enable assets[0-3].example.com as asset hosts."
+  option_log_really_silent_name: "Log really silent"
+  option_log_really_silent_description: "Remove log entries when an object is deleted"
   notification_method_test: "Test"
   notification_method_smtp: "SMTP"
   notification_smtp_address: "Address"
@@ -715,6 +728,7 @@ en-US:
   ProjectMilestone: Milestone
   ProjectFile: File
   ProjectFileRevision: File revision
+  WikiPage: Wiki page
   
   search_dashboard: "{{type}}: {{name}} in {{project}}"
   search_project: "{{type}}: {{name}}"

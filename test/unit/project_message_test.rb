@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 
-class ProjectMessageTest < Test::Unit::TestCase
+class ProjectMessageTest < ActiveSupport::TestCase
   fixtures :project_messages
 
   # Replace this with your real tests.

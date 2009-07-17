@@ -1,18 +1,12 @@
 <%
-  @page_title = :user_card.l_with_args({:user => @user.display_name})
-  @tabbed_navigation_items = dashboard_tabbed_navigation(:overview)
-  @bread_crumbs = dashboard_crumbs(h @logged_user.display_name)
-  
   @page_actions = []
   if @user.profile_can_be_updated_by(@logged_user)
 	  @page_actions += [{:title => :edit, :url => "/user/edit/#{@user.id}"}]
   end
   
   if @user.permissions_can_be_updated_by(@logged_user)
-  	@page_actions << {:title => :update_permissions, :url => "/account/update_permissions/#{@user.id}"}
+  	@page_actions << {:title => :update_permissions, :url => "/user/update_permissions/#{@user.id}"}
   end
-  
-  @additional_stylesheets = []
 %>
 <%=
   render :partial => 'user/user_card', :collection => [@user]

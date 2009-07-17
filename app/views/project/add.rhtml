@@ -1,14 +1,3 @@
-<%
-  @page_title = :add_project.l
-  
-  @tabbed_navigation_items = administration_tabbed_navigation(:projects)
-  @bread_crumbs = administration_crumbs(:add_project, [{:title => :projects, :url => "/administration/projects"}])
-  
-  @page_actions = []
-  
-  @additional_stylesheets = []
-%>
-
 <%= form_tag :controller => 'project', :action => 'add' %>
 <%= render :partial => 'form' %>
     <button class="submit" type="submit"><%= :add_project.l %></button>

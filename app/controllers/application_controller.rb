@@ -21,11 +21,13 @@
 # Likewise, all the methods added will be available for all controllers.
 
 require_dependency 'login_system'
+require_dependency 'config/aaf'
 
 class ApplicationController < ActionController::Base
   include LoginSystem
 
   protect_from_forgery
+  helper :navigation
 
   before_filter :reload_owner
   before_filter :login_required

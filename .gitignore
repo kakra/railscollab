@@ -10,6 +10,7 @@ log/*.log
 log/ferret_server.*
 nbproject
 public/logos/**
+public/avatars/**
 tmp/restart.txt
 tmp/**/*
 public/themes/*

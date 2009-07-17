@@ -109,7 +109,7 @@ module ApplicationHelper
 	   if @active_project.nil?
 	     actions += [
 	       {:name => :delete.l, :url => "/user/delete/#{user.id}", :cond => user.can_be_deleted_by(@logged_user), :method => :post, :confirm => :confirm_user_delete.l},
-	       {:name => :permissions.l, :url => "/account/update_permissions/#{user.id}", :cond => user.permissions_can_be_updated_by(@logged_user)}]
+	       {:name => :permissions.l, :url => "/user/update_permissions/#{user.id}", :cond => user.permissions_can_be_updated_by(@logged_user)}]
 	   else
 	     actions << {:name => :remove.l, :url => "/project/#{@active_project.id}/remove_user/#{user.id}", :cond => user.can_be_deleted_by(@logged_user), :method => :post, :confirm => :confirm_user_remove.l}
 	   end
@@ -182,6 +182,11 @@ module ApplicationHelper
   def actions_for_time_short(time)
     [{:name => :edit.l,   :url => {:controller => 'time', :action => 'edit',   :id => time.id}, :cond => time.can_be_edited_by(@logged_user)},
      {:name => :delete.l, :url => {:controller => 'time', :action => 'delete', :id => time.id}, :cond => time.can_be_deleted_by(@logged_user), :method => :post, :confirm => :time_confirm_delete.l}]
+  end
+
+  def actions_for_wiki_page(page)
+    [{:name => :edit.l,    :url => {:controller => 'wiki_pages', :action => 'edit',   :id => page}, :cond => page.can_be_edited_by(@logged_user)},
+     {:name => :delete.l,  :url => {:controller => 'wiki_pages', :action => 'destroy', :id => page}, :cond => page.can_be_deleted_by(@logged_user), :method => :delete, :confirm => :wiki_page_confirm_delete.l}]
   end
   
   def cal_table(in_rows, tableclass)
