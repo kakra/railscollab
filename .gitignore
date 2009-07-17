@@ -2,8 +2,10 @@
 config/app_keys.yml
 config/config.yml
 config/database.yml
+config/deploy.rb
 config/ferret_server.yml
 config/deploy.rb
+config/newrelic.yml
 coverage
 index/**
 log/*.log
